@@ -1,0 +1,21 @@
+#SETUP GUIDE
+
+docker network create fnirs-net
+docker network ls
+
+docker run -d --network fnirs-net -v ollama:/root/.ollama -p 5000:11434 --name ollama_fnirs ollama/ollama
+docker exec -it ollama_fnirs ollama pull llama3.2
+docker exec -it ollama_fnirs ollama pull nomic-embed-text
+ollama list
+
+docker run -d --network fnirs-net --name fnirsdb -p 6000:5432 -e POSTGRES_PASSWORD=password timescale/timescaledb-ha:pg16
+docker ps
+
+(mac) brew install postgres
+psql -d "postgres://postgres:password@localhost:6000/postgres"
+\dx
+CREATE EXTENSION IF NOT EXISTS ai CASCADE;
+\q
+
+docker exec -it fnirsdb bash    
+pip install psycopg2
